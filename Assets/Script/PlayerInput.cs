@@ -5,32 +5,65 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
+    //      ======   获取的组件   ======
+    public GameObject model;//获取人物模型
+
+
     //      ======   实现角色移动   ======
     //      1.定义角色移动的按键WSAD
+    [Header("===   Moving based    ===")]
     public KeyCode KeyUp = KeyCode.W;
     public KeyCode KeyDown = KeyCode.S;
-    public KeyCode KeyLift = KeyCode.A;
+    public KeyCode KeyLeft = KeyCode.A;
     public KeyCode KeyRight = KeyCode.D;
 
-    //      2.获得角色移动的模长
-    public float forAndafter;//四边形前后移动距离
-    public float liftTorigth;//四边形左右移动距离
-    public float forAndafter2;//圆形前后移动距离
-    public float liftTorigth2;//圆形左右移动距离
-    public float lengTh;//用圆形范围得到的模长
-    public Vector2 direction;//向量方向
+    public KeyCode KeyA;//是否进入跑步状态
+
+    public bool InputEnable = true;//通过判断InputEnable的值来控制玩家输入
+
+    //      2.获得角色移动的强度
+    public float targetforAndafter;//四边形前后移动的目标输入值
+    public float targetleftTorigth;///四边形左右移动的目标输入值
+    public float forAndafter;//四边形前后移动输入值
+    public float leftTorigth;//四边形左右移动输入值
+    public float VelocityforAndafter;// 调用Mathf.SmoothDamp方法时的速度参数，不赋值
+    public float VelocityliftTorigth;
+
+    public float forAndafter2;//圆形前后移动输入值
+    public float liftTorigth2;//圆形左右移动输入值
+
+    public float lengTh;//输入强度
+    public Vector3 direcTion;//向量方向
+
+    //      3.动画触发信号判断
+    public bool run;//奔跑控制器（为真，则进入奔跑状态）
 
     void Update()
     {
-        //方形范围得到的坐标（forAndafter,liftTorigth）
-        forAndafter = (float)((Input.GetKey(KeyUp) ? 1.0 : 0) - (Input.GetKey(KeyDown) ? 1.0 : 0));
-        liftTorigth = (float)((Input.GetKey(KeyLift) ? 1.0 : 0) - (Input.GetKey(KeyRight) ? 1.0 : 0));
-        //圆形范围得到的坐标
-        Vector2 TempVc = SqureToCircle(new Vector2(forAndafter, liftTorigth));
-        forAndafter2 = TempVc.x;
-        liftTorigth2 = TempVc.y;
-        lengTh = Mathf.Sqrt((float)(forAndafter2 * forAndafter2 + liftTorigth2 * liftTorigth2));
-        direction = forAndafter2 * transform.forward + liftTorigth2 * transform.right;//角色要走的方向
+        //方形范围目标得到的坐标（forAndafter,leftTorigth）
+        targetforAndafter = ((Input.GetKey(KeyUp) ? 1.0f : 0) - (Input.GetKey(KeyDown) ? 1.0f : 0));
+        targetleftTorigth = ((Input.GetKey(KeyLeft) ? 1.0f : 0) - (Input.GetKey(KeyRight) ? 1.0f : 0));
+
+        if (InputEnable == false)//使用InputEnable开关来控制玩家的输入功能
+        {
+            targetforAndafter = 0;
+            targetleftTorigth = 0;
+
+        }
+
+        //方形范围实际的坐标,有一个增长的过程
+        forAndafter = Mathf.SmoothDamp(forAndafter, targetforAndafter, ref VelocityforAndafter, 0.1f);
+        leftTorigth = Mathf.SmoothDamp(leftTorigth, targetleftTorigth, ref VelocityliftTorigth, 0.1f);
+
+        //将四边形范围改为圆形范围然后得到的坐标
+        Vector2 TempVc = SqureToCircle(new Vector2(leftTorigth, forAndafter));
+        liftTorigth2 = TempVc.x;
+        forAndafter2 = TempVc.y; 
+
+        lengTh = Mathf.Sqrt((forAndafter2 * forAndafter2 + liftTorigth2 * liftTorigth2));//输入强度
+        direcTion = forAndafter2 * Vector3.forward + liftTorigth2 * Vector3.right;//角色要走的方向
+
+        run = Input.GetKey(KeyA);//奔跑状态控制
     }
 
 

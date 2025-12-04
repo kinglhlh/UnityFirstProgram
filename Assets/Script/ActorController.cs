@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ActorController : MonoBehaviour
@@ -9,22 +10,57 @@ public class ActorController : MonoBehaviour
     public PlayerInput pi;//调用PlayerInput脚本
     [SerializeField]
     private Animator anim;//获取组件Animator
+    [SerializeField]
+    private Rigidbody rigid;//获取刚体
+
+    //      ======   变量声明   ======
+    private Vector3 realLength;//角色移动的最终量
+    public float movingSpeed = 3.0f; //基础速度
+    public float runMultiplier = 2.0f;//当跑步键按下时，乘以这个速度倍率
+    private Vector3 characterTurn;//角色转转向变量
+    private float animationTurn; //动画切换变量
+
 
     void Awake()
     { 
+        //手动获得人物模型后，自动获取的组件
         anim = model.GetComponent<Animator>();
         pi = GetComponent<PlayerInput>();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+        rigid = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        //1.动画播放的平滑切换
+        animationTurn = ((pi.run) ? 2.0f : 1.0f);//由它来控制人物跑和走动画的切换                                                                                      
+        float targetForward = Mathf.Lerp(anim.GetFloat("forward"), animationTurn, 0.3f);
+        anim.SetFloat("forward", pi.lengTh * targetForward);//Mathf.Lerp(线性插值)让动画参数"forward"在走路和跑步之间平滑过渡的，实际上是由1增加到2
+       //原理是我们的forward的值达到1就播放走路，达到2就播放跑
+
+
+        //2.人物转向的切换
+        if (pi.lengTh > 0.1f) //添加这个判断，是为了，避免当玩家没有输入时，他的TargetDug和TargetDturn的变为零，导致角色的面朝方向变为0,0
+        {
+
+            characterTurn = Vector3.Slerp(model.transform.forward, pi.direcTion, 0.3f);//Vector3.Slerp（ 球面插值）是用来做人物转向缓冲的
+            //原理也是：由模型现在的朝像，以莫个定值转向另一个放像
+            model.transform.forward = characterTurn;
+        }
+        //角色最终的移动，到这里还没完，我们要让角色的刚体移动
+        if (pi.lengTh > 0.1f)
+        {
+            realLength = pi.lengTh * pi.direcTion * movingSpeed * ((pi.run) ? runMultiplier : 1.0f);
+        }
+        else
+        {
+            realLength = Vector3.zero; // 输入强度太小，人物不动
+        }
+    }
+
+    private void FixedUpdate()
+    {
+       //控制刚体移动
+        rigid.velocity = new Vector3(realLength.x, rigid.velocity.y, realLength.z );
     }
 }
