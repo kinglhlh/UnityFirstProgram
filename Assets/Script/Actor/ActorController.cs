@@ -32,6 +32,7 @@ public class ActorController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //      $$$$$$   移动部分   $$$$$$
         //1.动画播放的平滑切换
         animationTurn = ((pi.run) ? 2.0f : 1.0f);//由它来控制人物跑和走动画的切换                                                                                      
         float targetForward = Mathf.Lerp(anim.GetFloat("forward"), animationTurn, 0.3f);
@@ -56,11 +57,18 @@ public class ActorController : MonoBehaviour
         {
             realLength = Vector3.zero; // 输入强度太小，人物不动
         }
+
+        //      $$$$$$   跳跃部分   $$$$$$
+        if (pi.jump)
+        {
+            anim.SetTrigger("jump");
+        }
     }
 
     private void FixedUpdate()
     {
-       //控制刚体移动
+        //      $$$$$$   移动部分   $$$$$$
+        //控制刚体移动
         rigid.velocity = new Vector3(realLength.x, rigid.velocity.y, realLength.z );
     }
 }

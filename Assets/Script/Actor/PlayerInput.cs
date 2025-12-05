@@ -17,11 +17,14 @@ public class PlayerInput : MonoBehaviour
     public KeyCode KeyLeft = KeyCode.A;
     public KeyCode KeyRight = KeyCode.D;
 
+    [Header("===   Function based    ===")]
     public KeyCode KeyA;//是否进入跑步状态
+    public KeyCode KeyB;//设定为K,进行跳跃功能
 
     public bool InputEnable = true;//通过判断InputEnable的值来控制玩家输入
 
-    //      2.获得角色移动的强度
+    //      2.获得角色移动的变量
+    [Header("===   Speed Variable quantity   ===")]
     public float targetforAndafter;//四边形前后移动的目标输入值
     public float targetleftTorigth;///四边形左右移动的目标输入值
     public float forAndafter;//四边形前后移动输入值
@@ -35,14 +38,19 @@ public class PlayerInput : MonoBehaviour
     public float lengTh;//输入强度
     public Vector3 direcTion;//向量方向
 
-    //      3.动画触发信号判断
+    //      3.角色跳跃的变量
+    [Header("===   Jump Variable quantity   ===")]
+    public bool jump;
+
+    //      ======   动画触发信号判断   ======
     public bool run;//奔跑控制器（为真，则进入奔跑状态）
 
     void Update()
     {
+        //      $$$$$$   移动部分   $$$$$$
         //方形范围目标得到的坐标（forAndafter,leftTorigth）
         targetforAndafter = ((Input.GetKey(KeyUp) ? 1.0f : 0) - (Input.GetKey(KeyDown) ? 1.0f : 0));
-        targetleftTorigth = ((Input.GetKey(KeyLeft) ? 1.0f : 0) - (Input.GetKey(KeyRight) ? 1.0f : 0));
+        targetleftTorigth = ((Input.GetKey(KeyRight) ? 1.0f : 0) - (Input.GetKey(KeyLeft) ? 1.0f : 0));
 
         if (InputEnable == false)//使用InputEnable开关来控制玩家的输入功能
         {
@@ -64,6 +72,12 @@ public class PlayerInput : MonoBehaviour
         direcTion = forAndafter2 * Vector3.forward + liftTorigth2 * Vector3.right;//角色要走的方向
 
         run = Input.GetKey(KeyA);//奔跑状态控制
+
+        //      $$$$$$   跳跃部分   $$$$$$
+        if (Input.GetKeyDown(KeyB))
+        {
+            jump = true;
+        }
     }
 
 
