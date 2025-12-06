@@ -28,14 +28,14 @@ public class GroundSensor : MonoBehaviour
         poinT1 = transform.position + transform.up * radius;
         poinT2 = transform.position + transform.up * cpC.height - transform.up * radius;
         //外部碰撞体数组
-        Collider[] outcolliders = Physics.OverlapCapsule(poinT1, poinT2, radius, LayerMask.GetMask("Ground"));
+        Collider[] outcolliders = Physics.OverlapCapsule(poinT1, poinT2, radius, LayerMask.GetMask("ground"));
         if (outcolliders.Length > 0)
         {
-            isGrounded = true; 
+            SendMessageUpwards("Inground"); 
         }
         else
         {
-            isGrounded = false; 
+            SendMessageUpwards("NotInground");
         }
 
         if (outcolliders.Length != 0)

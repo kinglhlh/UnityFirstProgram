@@ -451,7 +451,7 @@ ModelImporter:
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 26
+      lastFrame: 26.2
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -470,7 +470,21 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.027801758
+        functionName: OnJumpEnter
+        data: 
+        objectReferenceParameter: {fileID: 9100000, guid: 0dd736c05ac072b4c887160064b662f9, type: 2}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.8360656
+        functionName: OnJumpExit
+        data: 
+        objectReferenceParameter: {fileID: 9100000, guid: 0dd736c05ac072b4c887160064b662f9, type: 2}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
