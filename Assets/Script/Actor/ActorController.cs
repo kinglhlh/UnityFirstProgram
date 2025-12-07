@@ -27,6 +27,9 @@ public class ActorController : MonoBehaviour
     public bool PlanLock = false;//标记移动锁定
     private Vector3 jumpInertia;//这个是用来保存起跳前的水平速度
 
+    //      3.下落变量
+    public float fallSpeed = 7.0f;//下落基础速度
+    public bool isFall = false;//标记是否处于下落状态
 
     void Awake()
     { 
@@ -34,6 +37,9 @@ public class ActorController : MonoBehaviour
         anim = model.GetComponent<Animator>();
         pi = GetComponent<PlayerInput>();
         rigid = GetComponent<Rigidbody>();
+
+        //开启刚体重力
+        rigid.useGravity = true;
     }
 
     // Update is called once per frame
@@ -79,6 +85,12 @@ public class ActorController : MonoBehaviour
             anim.SetTrigger("jump");
          
         }
+
+        //      $$$$$$   下落状态   $$$$$$
+        isFall = !isGround && rigid.velocity.y < 0;
+        
+        anim.SetBool("isfall", isFall);
+        
     }
 
     private void FixedUpdate()
@@ -89,6 +101,12 @@ public class ActorController : MonoBehaviour
 
         //      $$$$$$   跳跃部分   $$$$$$
         JumpImpulse = Vector3.zero;//清空向上的冲力
+
+        //      $$$$$$   下落状态   $$$$$$
+        if (isFall && rigid.velocity.y > -fallSpeed)
+        {
+            rigid.velocity += Vector3.down * fallSpeed * Time.fixedDeltaTime;
+        }
     }
 
     //      ======   外部信息接收区   ======
@@ -102,6 +120,7 @@ public class ActorController : MonoBehaviour
         PlanLock = false;
         pi.InputEnable = true;
         jumpInertia = Vector3.zero; // 落地后清空惯性
+        anim.SetBool("isfall", false);// 落地后关闭下落动画
     }
 
     public void NotInground()
